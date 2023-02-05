@@ -1,5 +1,5 @@
 # sebsib-forms-api
-The main API for the web-portal and mobile app
+The main API for sebsib-forms-section
 
 `yarn` to update packages
 
