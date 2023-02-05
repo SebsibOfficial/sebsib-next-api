@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { Survey } = require("../models");
+const { Survey, Project, Response } = require("../models");
 const ObjectId = require('mongoose').Types.ObjectId;
 const sanitizeAll = require('../utils/genSantizer');
 const inputTranslate = require('../utils/translateIds');
@@ -57,6 +57,36 @@ const getSurveyController = async (req, res, next) => {
   }
 }
 
-const sendResponseController = async (req, res, next) => { }
+const sendResponseController = async (req, res) => {
+  // list of response data 
+  var response = req.body;
+  try {
+    var responseId = response._id;
+
+    var survey = await Survey.findOne({ _id: new ObjectId(response.surveyId) });
+    if (!survey) return res.status(403).json({ message: "Survey does not exist anymore" });
+
+    // get the project where the surveys id is inside the surveysId array
+    var project = await Project.findOne({ surveysId: { $in: [survey._id] } });
+    if (!project) return res.status(403).json({ message: "Project does not exist anymore" });
+
+    await Response.insertMany([{
+      _id: responseId,
+      surveyId: response.surveyId,
+      shortSurveyId: response.shortSurveyId,
+      name: response.name,
+      answers: response.answers ?? '',
+      sentDate: response.sentDate,
+      createdOn: new Date()
+    }]);
+
+    await Survey.updateOne({ _id: response.surveyId }, { $push: { "responses": responseId } }).clone();
+
+    return res.status(200).json({ message: "success" })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+}
 
 module.exports = { getSurveyController, sendResponseController }
