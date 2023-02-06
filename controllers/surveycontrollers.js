@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { Survey, Project, Response } = require("../models");
 const ObjectId = require('mongoose').Types.ObjectId;
-const sanitizeAll = require('../utils/genSantizer');
+const { sanitizeAll, checkFaultyAnswers } = require('../utils/genSantizer');
 const inputTranslate = require('../utils/translateIds');
 
 const getSurveyController = async (req, res, next) => {
@@ -69,6 +69,13 @@ const sendResponseController = async (req, res) => {
     // get the project where the surveys id is inside the surveysId array
     var project = await Project.findOne({ surveysId: { $in: [survey._id] } });
     if (!project) return res.status(403).json({ message: "Project does not exist anymore" });
+
+    // if there is an invalid character it discards the input instead of sanitizing it.
+    for (var i = 0; i < response.answers.length; i++) {
+      var answer = response.answers[i];
+      
+      if (checkFaultyAnswers(answer.answer)) return res.status(403).json({ message: "Invalid characters in answer" })
+    }
 
     await Response.insertMany([{
       _id: responseId,
