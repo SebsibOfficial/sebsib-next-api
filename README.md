@@ -1,4 +1,4 @@
-# sebsib-forms-api
+# sebsib-next-api
 The main API for sebsib-forms-section
 
 `yarn` to update packages
