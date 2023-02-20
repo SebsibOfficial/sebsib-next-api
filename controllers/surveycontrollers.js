@@ -36,6 +36,12 @@ const getSurveyController = async (req, res, next) => {
 
     var survey = _survey[0];
 
+    
+    if(survey.type === undefined || survey.type === null || survey.type === '' || survey.type === 'REGULAR') 
+    return res.status(403).json({
+      message: "Survey not availiable"
+    });
+
     return res.status(200).json({
       _id: survey._id,
       shortSurveyId: survey.shortSurveyId,
