@@ -5,15 +5,15 @@ const { sanitizeAll, checkFaultyAnswers } = require('../utils/genSantizer');
 const inputTranslate = require('../utils/translateIds');
 
 const getSurveyController = async (req, res, next) => {
-  const surveyId = sanitizeAll(req.params.id);
+  const idFromLink = sanitizeAll(req.params.id);
 
   try {
-    if (!(await Survey.exists({ _id: surveyId }))) return res.status(404).json({ message: "Survey not found" });
+    if (!(await Survey.exists({ link: idFromLink }))) return res.status(404).json({ message: "Survey not found" });
 
     var _survey = await Survey.aggregate([
       {
         "$match": {
-          "_id": new ObjectId(surveyId)
+          "link": idFromLink
         }
       },
       {
