@@ -17,8 +17,6 @@ module.exports = {
     PROJECT: "PROJECT"
   },
   PLATFORMS:[
-    "SEBSIB_OFFICE_1",
-    "SEBSIB_COLLECT_2",
-    "SEBSIB_ADMIN_3"
+    "SEBSIB_FORMS_1",
   ]
 }

@@ -41,7 +41,7 @@ const getSurveyController = async (req, res, next) => {
     return res.status(403).json({
       message: "Survey not availiable"
     });
-
+    
     return res.status(200).json({
       _id: survey._id,
       shortSurveyId: survey.shortSurveyId,
@@ -86,7 +86,6 @@ const sendResponseController = async (req, res) => {
     await Response.insertMany([{
       _id: responseId,
       surveyId: response.surveyId,
-      shortSurveyId: response.shortSurveyId,
       answers: response.answers ?? '',
       sentDate: response.sentDate,
       createdOn: new Date()

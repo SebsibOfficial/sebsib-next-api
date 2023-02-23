@@ -26,10 +26,6 @@ const responseSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     required: true,
   },
-  shortSurveyId: {
-    type: String,
-    required: true,
-  },
   name: {
     type: String,
     required: false
