@@ -1,5 +1,7 @@
+const { string } = require('joi');
 const jwt = require('jsonwebtoken');
-const { Survey, Project, Response } = require("../models");
+const { Survey, Project, Response, Organization } = require("../models");
+const { $where } = require('../models/Response');
 const ObjectId = require('mongoose').Types.ObjectId;
 const { sanitizeAll, checkFaultyAnswers } = require('../utils/genSantizer');
 const inputTranslate = require('../utils/translateIds');
@@ -45,6 +47,8 @@ const getSurveyController = async (req, res, next) => {
     return res.status(200).json({
       _id: survey._id,
       shortSurveyId: survey.shortSurveyId,
+      projectName: "", //
+      shortOrgId: "", //
       name: survey.name,
       questions: survey.joined_questions.sort(function (x, y) { return x.createdOn - y.createdOn; }),
       // i dont think we need to send responses from forms requests
@@ -66,6 +70,7 @@ const getSurveyController = async (req, res, next) => {
 const sendResponseController = async (req, res) => {
   // list of response data 
   var response = req.body;
+  console.log(response)
   try {
     var responseId = response._id;
 
@@ -100,4 +105,20 @@ const sendResponseController = async (req, res) => {
   }
 }
 
-module.exports = { getSurveyController, sendResponseController }
+const getMetaInfo = async (req, res) => {
+  // Return Project name, shortOrg Id
+  const surveyId = sanitizeAll(req.params.id);
+  try {
+    if (!(await Survey.exists({ _id: surveyId }))) return res.status(404).json({ message: "Survey not found" });
+    var theProject = await Project.findOne({surveysId: surveyId});
+    var theOrg = await Organization.findOne({projectsId: theProject._id});
+
+    return res.status(200).json({shortOrgId: theOrg.orgId, projectName: theProject.name.toUpperCase()})
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+}
+
+module.exports = { getSurveyController, sendResponseController, getMetaInfo }

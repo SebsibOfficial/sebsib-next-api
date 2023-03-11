@@ -1,3 +1,3 @@
-const { getSurveyController, sendResponseController } = require('../controllers/surveycontrollers');
+const { getSurveyController, sendResponseController, getMetaInfo } = require('../controllers/surveycontrollers');
 
-module.exports = {getSurveyController, sendResponseController}
+module.exports = {getSurveyController, sendResponseController, getMetaInfo}
