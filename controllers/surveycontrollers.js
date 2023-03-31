@@ -2,9 +2,9 @@ const { string } = require('joi');
 const jwt = require('jsonwebtoken');
 const { Survey, Project, Response, Organization } = require("../models");
 const { $where } = require('../models/Response');
+const { Survey, Project, Response } = require("../models");
 const ObjectId = require('mongoose').Types.ObjectId;
 const { sanitizeAll, checkFaultyAnswers } = require('../utils/genSantizer');
-const inputTranslate = require('../utils/translateIds');
 
 const getSurveyController = async (req, res, next) => {
   const idFromLink = sanitizeAll(req.params.id);
@@ -20,11 +20,11 @@ const getSurveyController = async (req, res, next) => {
       },
       {
         "$lookup": {
-          "from": "questions",
+          "from": "online-questions",
           "localField": "questions",
           "foreignField": "_id",
           "as": "joined_questions",
-        }
+        },
       },
       {
         "$lookup": {
@@ -38,7 +38,6 @@ const getSurveyController = async (req, res, next) => {
 
     var survey = _survey[0];
 
-    
     if(survey.type === undefined || survey.type === null || survey.type === '' || survey.type === 'REGULAR') 
     return res.status(403).json({
       message: "Survey not availiable"
@@ -51,8 +50,6 @@ const getSurveyController = async (req, res, next) => {
       shortOrgId: "", //
       name: survey.name,
       questions: survey.joined_questions.sort(function (x, y) { return x.createdOn - y.createdOn; }),
-      // i dont think we need to send responses from forms requests
-      // responses: survey.joined_responses,
       description: survey.description,
       pic: survey.pic,
       createdOn: survey.createdOn,
@@ -84,7 +81,7 @@ const sendResponseController = async (req, res) => {
     // if there is an invalid character it discards the input instead of sanitizing it.
     for (var i = 0; i < response.answers.length; i++) {
       var answer = response.answers[i];
-      
+
       if (checkFaultyAnswers(answer.answer)) return res.status(403).json({ message: "Invalid characters in answer" })
     }
 
