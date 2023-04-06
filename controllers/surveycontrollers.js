@@ -2,7 +2,6 @@ const { string } = require('joi');
 const jwt = require('jsonwebtoken');
 const { Survey, Project, Response, Organization } = require("../models");
 const { $where } = require('../models/Response');
-const { Survey, Project, Response } = require("../models");
 const ObjectId = require('mongoose').Types.ObjectId;
 const { sanitizeAll, checkFaultyAnswers } = require('../utils/genSantizer');
 
