@@ -89,6 +89,7 @@ const sendResponseController = async (req, res) => {
       surveyId: response.surveyId,
       answers: response.answers ?? '',
       sentDate: response.sentDate,
+      responseTime: response.responseTime ?? 0,
       createdOn: new Date()
     }]);
 

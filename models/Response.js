@@ -46,6 +46,10 @@ const responseSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     required: false
   },
+  responseTime: {
+    type: Number,
+    required: false
+  },
   createdOn: {
     type: Date,
     default: Date.now
