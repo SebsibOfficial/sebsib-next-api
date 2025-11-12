@@ -47,7 +47,32 @@ if (process.env.NODE_ENV == "dev" || process.env.NODE_ENV == "test") {
 }
 app.set("trust proxy", 1);
 app.use(limiter); // Limit requests
-app.use(cors()); // Enable CORS
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow no-origin (like Postman)
+    if (!origin) return callback(null, true);
+
+    const allowed =
+      origin.endsWith(".sebsib.yaltopia.com") ||
+      origin === "http://sebsib.yaltopia.com" ||
+      origin === "https://sebsib.yaltopia.com";
+
+    if (allowed) callback(null, true);
+    else callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  preflightContinue: false, // automatically handles OPTIONS
+  optionsSuccessStatus: 204, // some browsers choke on 200 for OPTIONS
+};
+
+// Enable CORS with options
+app.use(cors(corsOptions));
+// Explicitly handle preflight requests
+app.options("*", cors(corsOptions));
+
 if (process.env.NODE_ENV != "test")
   // Only in Test mode
   app.use(authorizeKey); // Verify API Key in header
